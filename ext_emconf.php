@@ -11,7 +11,7 @@ $EM_CONF[$_EXTKEY] = [
     'description'      => 'Module for managing localization import and export',
     'category'         => 'module',
     'version'          => '11.0.0',
-    'state'            => 'alpha',
+    'state'            => 'stable',
     'uploadfolder'     => false,
     // TODO: The option `createDirs` is not supported in v10 anymore and should be removed. If the extension needs folders, they must created via `GeneralUtility::mkdir_deep()`.
     // see: https://docs.typo3.org/c/typo3/cms-core/master/en-us/Changelog/10.0/Breaking-88525-RemoveCreateDirsDirectiveOfExtensionInstallationEm_confphp.html
