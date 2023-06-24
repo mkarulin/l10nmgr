@@ -81,7 +81,7 @@ class L10nmgrFileGarbageCollection extends AbstractTask
             $globalResult &= $result;
         }
         // Return the global result, which is a success only if all directories could be cleaned up without problem
-        return $globalResult;
+        return (bool)$globalResult;
     }
 
     /**
