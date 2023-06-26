@@ -198,7 +198,8 @@ class ExcelXmlView extends AbstractExportView implements ExportViewInterface
 	<Cell ss:StyleID="s37"></Cell>
 	<Cell ss:StyleID="s37"></Cell>
 	<Cell ss:StyleID="s37"></Cell>
-	' . ($page['header']['prevLang'] ? '<Cell ss:StyleID="s37"></Cell>' : '') . '
+	' . (isset($page['header']) && $page['header']['prevLang']
+                                    ? '<Cell ss:StyleID="s37"></Cell>' : '') . '
 	</Row>
 	';
                             $output = array_merge($output, $fieldsForRecord);
