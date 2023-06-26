@@ -1056,7 +1056,9 @@ class L10nBaseService implements LoggerAwareInterface
                     $parent = $this->getRawRecord('tt_content', (int)$element[$parentField]);
                     $this->recursivelyCheckForRelationParents($parent, $Tlang, $parentField, $childrenField);
                 } else {
-                    $this->TCEmain_cmd['tt_content'][$element['uid']]['localize'] = $Tlang;
+                    if (isset($element['uid'])) {
+                        $this->TCEmain_cmd['tt_content'][$element['uid']]['localize'] = $Tlang;
+                    }
                 }
             }
         }
