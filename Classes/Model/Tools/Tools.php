@@ -987,7 +987,15 @@ class Tools
                             break;
                         }
                         $allowedFields = $this->getAllowedFieldsForTable($tInfo['translation_table'] ?? '');
-                        foreach (($GLOBALS['TCA'][$tInfo['translation_table']]['columns'] ?? []) as $field => $cfg) {
+                        $tcaCols = $GLOBALS['TCA'][$tInfo['translation_table']]['columns'] ?? [];
+                        $cType = isset($tInfo['CType']) ? $tInfo['CType'] : null;
+                        if ($cType) {
+                            $overrides = $GLOBALS['TCA']['tt_content']['types'][$cType]['columnsOverrides'] ?? null;
+                            if ($overrides) {
+                                $tcaCols = array_replace_recursive($tcaCols, $overrides);
+                            }
+                        }
+                        foreach ($tcaCols as $field => $cfg) {
                             if (!in_array($field, $allowedFields)) {
                                 continue;
                             }
