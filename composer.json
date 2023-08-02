@@ -3,13 +3,6 @@
   "type": "typo3-cms-extension",
   "description": "Module for managing localization import and export",
   "homepage": "https://docs.typo3.org/typo3cms/extensions/l10nmgr/",
-  "authors": [
-    {
-      "name": "Stefano Kowalke",
-      "role": "Developer",
-      "homepage": "https://arroba-it.de"
-    }
-  ],
   "license": [
     "GPL-2.0-or-later"
   ],
