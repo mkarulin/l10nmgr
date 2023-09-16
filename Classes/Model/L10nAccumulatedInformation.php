@@ -82,6 +82,11 @@ class L10nAccumulatedInformation
     protected int $forcedPreviewLanguage = 0;
 
     /**
+     * @var bool forced source language only
+     */
+    protected bool $onlyForcedPreviewLanguage = false;
+
+    /**
      * @var bool
      */
     protected bool $noHidden;
@@ -138,6 +143,11 @@ class L10nAccumulatedInformation
     public function setForcedPreviewLanguage(int $prevLangId): void
     {
         $this->forcedPreviewLanguage = $prevLangId;
+    }
+
+    public function setOnlyForcedPreviewLanguage(): void
+    {
+        $this->onlyForcedPreviewLanguage = true;
     }
 
     /**
@@ -211,7 +221,7 @@ class L10nAccumulatedInformation
             );
         }
         if ($previewLanguage) {
-            if (!empty($l10ncfg['onlyForcedSourceLanguage'])) {
+            if (!empty($l10ncfg['onlyForcedSourceLanguage']) || $this->onlyForcedPreviewLanguage) {
                 $t8Tools->onlyForcedSourceLanguage = true;
             }
             $t8Tools->previewLanguages = [$previewLanguage];

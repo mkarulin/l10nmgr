@@ -124,6 +124,9 @@
 			<trans-unit id="export.xml.source-language.title" xml:space="preserve">
 				<source>Alternative source language:</source>
 			</trans-unit>
+			<trans-unit id="export.xml.source-language-only.title" xml:space="preserve">
+				<source>Only export records that are available in the alternative source language</source>
+			</trans-unit>
 			<trans-unit id="export.xml.new.title" xml:space="preserve">
 				<source>New/Changed content only</source>
 			</trans-unit>

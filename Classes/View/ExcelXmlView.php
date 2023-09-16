@@ -50,6 +50,11 @@ class ExcelXmlView extends AbstractExportView implements ExportViewInterface
     protected int $forcedSourceLanguage = 0;
 
     /**
+     * @var bool $onlyForcedSourceLanguage Overwrite the default language uid with the desired language to export only if available
+     */
+    protected bool $onlyForcedSourceLanguage = false;
+
+    /**
      * ExcelXmlView constructor.
      * @param L10nConfiguration $l10ncfgObj
      * @param int $sysLang
@@ -254,5 +259,10 @@ class ExcelXmlView extends AbstractExportView implements ExportViewInterface
     public function setForcedSourceLanguage(int $id)
     {
         $this->forcedSourceLanguage = $id;
+    }
+
+    public function setOnlyForcedSourceLanguage()
+    {
+        $this->onlyForcedSourceLanguage = true;
     }
 }

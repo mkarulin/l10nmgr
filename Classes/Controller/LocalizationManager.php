@@ -746,7 +746,9 @@ return false;
             '</div><div class="form-section"><div class="form-group mb-2">
 <label>' . $this->getLanguageService()->getLL('export.xml.source-language.title') . '</label><br />' .
             $this->_getSelectField('export_xml_forcepreviewlanguage', (string)$this->previewLanguage, $_selectOptions) .
-            '</div></div><div class="form-section"><div class="form-group mb-2">
+            '</div><div class="form-group mb-2"><div class="checkbox"><label>' .
+            '<input type="checkbox" value="1" name="export_xml_forcepreviewlanguage_only" /> ' . $this->getLanguageService()->getLL('export.xml.source-language-only.title') .
+            '</label></div></div></div><div class="form-section"><div class="form-group mb-2">
 <label>' . $this->getLanguageService()->getLL('general.action.import.upload.title') . '</label><br />' .
             '<input type="file" size="60" name="uploaded_import_file" />' .
             '</div></div><div class="form-section"><div class="form-group mb-2">' .
@@ -776,6 +778,10 @@ return false;
             $export_xml_forcepreviewlanguage = (int)GeneralUtility::_POST('export_xml_forcepreviewlanguage');
             if ($export_xml_forcepreviewlanguage > 0) {
                 $viewClass->setForcedSourceLanguage($export_xml_forcepreviewlanguage);
+            }
+            $export_xml_forcepreviewlanguage_only = (int)GeneralUtility::_POST('export_xml_forcepreviewlanguage_only');
+            if ($export_xml_forcepreviewlanguage_only > 0) {
+                $viewClass->setOnlyForcedSourceLanguage();
             }
             if ($this->MOD_SETTINGS['onlyChangedContent'] ?? false) {
                 $viewClass->setModeOnlyChanged();
@@ -991,6 +997,10 @@ return false;
             if ($export_xml_forcepreviewlanguage > 0) {
                 $viewClass->setForcedSourceLanguage($export_xml_forcepreviewlanguage);
             }
+            $export_xml_forcepreviewlanguage_only = (int)GeneralUtility::_POST('export_xml_forcepreviewlanguage_only');
+            if ($export_xml_forcepreviewlanguage_only > 0) {
+                $viewClass->setOnlyForcedSourceLanguage();
+            }
             if ($this->MOD_SETTINGS['onlyChangedContent'] ?? false) {
                 $viewClass->setModeOnlyChanged();
             }
@@ -1124,7 +1134,9 @@ return false;
             '<div class="form-group mb-2">' .
             '<label>' . $this->getLanguageService()->getLL('export.xml.source-language.title') . '</label><br />' .
             $this->_getSelectField('export_xml_forcepreviewlanguage', (string)$this->previewLanguage, $_selectOptions) .
-            '</div></div>';
+            '</div><div class="form-group mb-2"><div class="checkbox"><label>' .
+            '<input type="checkbox" value="1" name="export_xml_forcepreviewlanguage_only" /> ' . $this->getLanguageService()->getLL('export.xml.source-language-only.title') .
+            '</label></div></div></div>';
         // Add the option to send to FTP server, if FTP information is defined
         if ($this->emConfiguration->hasFtpCredentials()) {
             $tabContentXmlExport .= '<input type="checkbox" value="1" name="ftp_upload" id="tx_l10nmgr_ftp_upload" />

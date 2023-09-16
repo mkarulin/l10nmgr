@@ -253,11 +253,15 @@ class Export extends L10nCommand
             } else {
                 throw new Exception("Wrong format. Use 'CATXML' or 'EXCEL'");
             }
-            // Check if sourceLangStaticId is set in configuration and set setForcedSourceLanguage to this value
-            if ($l10nmgrCfgObj->getData('sourceLangStaticId') && ExtensionManagementUtility::isLoaded('static_info_tables')) {
+            // Check if forcedSourceLanguage is set in configuration and set setForcedSourceLanguage to this value
+            if ($l10nmgrCfgObj->getData('forcedSourceLanguage')) {
+                $l10nmgrGetXML->setForcedSourceLanguage((int)$l10nmgrCfgObj->getData('forcedSourceLanguage'));
+            } elseif ($l10nmgrCfgObj->getData('sourceLangStaticId') && ExtensionManagementUtility::isLoaded('static_info_tables')) {
+                // Check if sourceLangStaticId is set in configuration and set setForcedSourceLanguage to this value
                 $forceLanguage = $this->getStaticLangUid((int)$l10nmgrCfgObj->getData('sourceLangStaticId'));
                 $l10nmgrGetXML->setForcedSourceLanguage($forceLanguage);
             }
+            // Check if forcedSourceLanguage is overriden manually
             $forceLanguage = $input->getOption('forcedSourceLanguage');
             if (is_string($forceLanguage)) {
                 $l10nmgrGetXML->setForcedSourceLanguage((int)$forceLanguage);
