@@ -46,6 +46,7 @@ use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Utility\DiffUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -168,6 +169,11 @@ class Tools
     protected array $_callBackParams_currentRow = [];
 
     /**
+     * @var int
+     */
+    protected int $typo3Version = 0;
+
+    /**
      * Constructor
      * Setting up internal variable ->t8Tools
      * @throws \Doctrine\DBAL\DBALException
@@ -175,6 +181,7 @@ class Tools
     public function __construct()
     {
         $this->t8Tools = GeneralUtility::makeInstance(TranslationConfigurationProvider::class);
+        $this->typo3Version = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
         // Find all system languages:
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_language');
@@ -956,9 +963,15 @@ class Tools
                             $translationRecord = [];
                         }
                         if ($translationRecord !== [] && !empty($GLOBALS['TCA'][$tInfo['translation_table']]['ctrl']['transOrigDiffSourceField'])) {
-                            $diffArray = json_decode(
-                                $translationRecord[$GLOBALS['TCA'][$tInfo['translation_table']]['ctrl']['transOrigDiffSourceField']] ?? '', true
-                            );
+                            if ($this->typo3Version >= 11) {
+                                $diffArray = json_decode(
+                                    $translationRecord[$GLOBALS['TCA'][$tInfo['translation_table']]['ctrl']['transOrigDiffSourceField']] ?? '', true
+                                );
+                            } else {
+                                $diffArray = unserialize(
+                                    $translationRecord[$GLOBALS['TCA'][$tInfo['translation_table']]['ctrl']['transOrigDiffSourceField']] ?? ''
+                                );
+                            }
                         } else {
                             $diffArray = [];
                         }
@@ -1041,7 +1054,11 @@ class Tools
                                             }
                                         }
                                         if (is_array($translationRecord)) {
-                                            $diffsource = json_decode($translationRecord['l18n_diffsource'] ?? '', true);
+                                            if ($this->typo3Version >= 11) {
+                                                $diffsource = json_decode($translationRecord['l18n_diffsource'] ?? '', true);
+                                            } else {
+                                                $diffsource = unserialize($translationRecord['l18n_diffsource'] ?? '');
+                                            }
                                             if (!empty($diffsource[$field])) {
                                                 $xmlArray = GeneralUtility::xml2array($diffsource[$field]);
                                                 if (is_array($xmlArray)) {
