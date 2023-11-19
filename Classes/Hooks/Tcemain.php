@@ -110,10 +110,10 @@ class Tcemain
      * Hook for displaying small icon in page tree, web>List and page module.
      *
      * @param array $p
-     * @param DataHandler $pObj
+     * @param mixed $pObj
      * @return string
      */
-    public function stat(array $p, DataHandler $pObj): string
+    public function stat(array $p, mixed $pObj): string
     {
         if (!empty($this->getBackendUser()->groupData['allowed_languages'])
             && strcmp($this->getBackendUser()->groupData['allowed_languages'], '')) {
