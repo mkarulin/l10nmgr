@@ -10,7 +10,7 @@ $EM_CONF[$_EXTKEY] = [
     'title'            => 'Localization Manager',
     'description'      => 'Module for managing localization import and export',
     'category'         => 'module',
-    'version'          => '11.1.0',
+    'version'          => '11.2.0',
     'state'            => 'stable',
     'uploadfolder'     => false,
     // TODO: The option `createDirs` is not supported in v10 anymore and should be removed. If the extension needs folders, they must created via `GeneralUtility::mkdir_deep()`.
