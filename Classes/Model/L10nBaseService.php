@@ -99,12 +99,15 @@ class L10nBaseService implements LoggerAwareInterface
      */
     protected EmConfiguration $emConfiguration;
 
+    protected RecursivelyCheckRelationParent $recursivelyCheckRelationParent;
+
     /**
      * Check for deprecated configuration throws false positive in extension scanner.
      */
     public function __construct()
     {
         $this->emConfiguration = GeneralUtility::makeInstance(EmConfiguration::class);
+        $this->recursivelyCheckRelationParent = GeneralUtility::makeInstance(RecursivelyCheckRelationParent::class);
     }
 
     /**
@@ -639,37 +642,9 @@ class L10nBaseService implements LoggerAwareInterface
                                                         );
                                                     }
                                                 }
-                                            } elseif (!empty($inlineTablesConfig = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['l10nmgr']['inlineTablesConfig'] ?? []) && array_key_exists(
-                                                $table,
-                                                $inlineTablesConfig
-                                            )) {
-                                                /*
-                                                 * Special handling for 1:n relations
-                                                 *
-                                                 * Example: Inline elements (1:n) with tt_content as parent
-                                                 *
-                                                 * Config example:
-                                                 * $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['l10nmgr']['inlineTablesConfig'] = [
-                                                 *    'tx_myext_myelement' => [
-                                                 *       'parentField' => 'content',
-                                                 *       'childrenField' => 'myelements',
-                                                 *   ]];
-                                                 */
-                                                if (isset($this->TCEmain_cmd[$table][$elementUid])) {
-                                                    unset($this->TCEmain_cmd[$table][$elementUid]);
-                                                }
-                                                if (!empty($inlineTablesConfig[$table])
-                                                    && isset($element[$inlineTablesConfig[$table]['parentField']])
-                                                    && $element[$inlineTablesConfig[$table]['parentField']] > 0) {
-                                                    $this->depthCounter = 0;
-                                                    $this->recursivelyCheckForRelationParents(
-                                                        $element,
-                                                        (int)$Tlang,
-                                                        $inlineTablesConfig[$table]['parentField'] ?? '',
-                                                        $inlineTablesConfig[$table]['childrenField'] ?? ''
-                                                    );
-                                                }
-                                            } elseif ($table === 'sys_file_reference') {
+                                            }
+
+                                            if ($table === 'sys_file_reference') {
                                                 $element = $this->getRawRecord($table, $elementUid);
                                                 if (!empty($element['uid_foreign']) && !empty($element['tablenames']) && !empty($element['fieldname'])) {
                                                     if (!empty($GLOBALS['TCA'][$element['tablenames']]['columns'][$element['fieldname']]['config']['behaviour']['allowLanguageSynchronization'])) {
@@ -724,20 +699,13 @@ class L10nBaseService implements LoggerAwareInterface
                                                     }
                                                 }
                                             } else {
-                                                //print "\nNEW\n";
-                                                if (isset($this->TCEmain_cmd[$table][$elementUid])) {
-                                                    unset($this->TCEmain_cmd[$table][$elementUid]);
-                                                }
-
-                                                //START add container support
-                                                if (ExtensionManagementUtility::isLoaded('container') && $table === 'tt_content' && $element['tx_container_parent'] > 0) {
-                                                    // localization is done by EXT:container, when container is localized, so localize cmd is not required
-                                                    // but mapping is required
-                                                    $this->childMappingArray[$table][$elementUid] = true;
-                                                } else {
-                                                    $this->TCEmain_cmd[$table][$elementUid]['localize'] = $Tlang;
-                                                }
-                                                //END add container support
+                                                $this->recursivelyCheckRelationParent->localizeRecordAndRequiredParents(
+                                                    $element,
+                                                    (int)$Tlang,
+                                                    $table,
+                                                    $this->TCEmain_cmd,
+                                                    $this->childMappingArray
+                                                );
 
                                                 if (!empty($GLOBALS['TCA'][$table]['columns'][$Tfield])) {
                                                     $configuration = $GLOBALS['TCA'][$table]['columns'][$Tfield]['config'] ?? [];
@@ -1051,14 +1019,12 @@ class L10nBaseService implements LoggerAwareInterface
                     // Add element to existing localization array
                     $this->TCEmain_cmd['tt_content'][$translatedParent['uid']]['inlineLocalizeSynchronize']['ids'][] = $element['uid'] ?? 0;
                 }
+            } elseif (isset($element[$parentField]) && $element[$parentField] > 0) {
+                $parent = $this->getRawRecord('tt_content', (int)$element[$parentField]);
+                $this->recursivelyCheckForRelationParents($parent, $Tlang, $parentField, $childrenField);
             } else {
-                if (isset($element[$parentField]) && $element[$parentField] > 0) {
-                    $parent = $this->getRawRecord('tt_content', (int)$element[$parentField]);
-                    $this->recursivelyCheckForRelationParents($parent, $Tlang, $parentField, $childrenField);
-                } else {
-                    if (isset($element['uid'])) {
-                        $this->TCEmain_cmd['tt_content'][$element['uid']]['localize'] = $Tlang;
-                    }
+                if (isset($element['uid'])) {
+                    $this->TCEmain_cmd['tt_content'][$element['uid']]['localize'] = $Tlang;
                 }
             }
         }
